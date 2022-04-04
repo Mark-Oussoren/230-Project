@@ -1,0 +1,204 @@
+---
+title: "French Revolution Replication"
+author: "Sharon Hui and Mark Oussoren"
+date: "04/02/2022"
+output:
+  pdf_document:
+    number_sections: yes
+    extra_dependencies: ["float", "subfig"]
+bibliography: bib.bib
+citation_package: biblatex
+biblio-style: ieee
+header-includes:
+- \usepackage{subfig}
+- \usepackage{placeins}
+- \usepackage{float}
+- \floatplacement{figure}{H}
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE, cache = FALSE}
+# load in useful packages
+library(ggplot2)
+library(corrplot)
+library(ggpubr)
+library(gridExtra)
+library(plotly)
+library(tidyverse)
+library(foreign)
+library(patchwork)
+library(RColorBrewer)
+library(class)
+library(caret)
+library(cowplot)
+library(dplyr)
+
+# set default knitr chunk
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  warning = FALSE, 
+  message = FALSE,  
+  cache = FALSE, 
+  fig.width = 4,  
+  fig.height = 2.25, 
+  out.height = '75%',
+  out.width = '75%', 
+  fig.align = "center",  
+  fig.pos = "h")
+knitr::knit_hooks$set(plot = function(x, options)  {
+  paste0(knitr::hook_plot_tex(x, options), "\n\\FloatBarrier\n")
+})
+
+# set working directory
+setwd("~/230-Project/")
+
+# load french data
+french_main <- read.dta("french_main.dta")
+french_t5 <- read.dta("french_t5.dta")
+```
+
+
+```{r}
+ggplot(data = french_main) + geom_point(aes(x = year, y = totalpop, color = name)) + 
+  xlab("Year") + ylab("Total Population") + 
+  labs(color = "Location") + theme(text = element_text(size = 7),
+        legend.position = "bottom") 
+```
+
+```{r}
+
+a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
+       "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
+
+b = c("Baden", "Bavaria Old", "Hessen-Darmstadt, right of the Rhine",
+      "Saxony", "Wuerttemberg")
+
+c = c( "Brandenburg", "East Prussia", "Pomerania without Swedish Pomerania",
+       "Silesia", "Mecklenburg-Schwerin", "Schleswig-Holstein" )
+
+cols <- c("fpresence", "")
+
+t1a = na.omit(french_main) %>% filter( name %in% a) %>% 
+  group_by(name) %>% 
+  summarise(first = first(fpresence),
+            total_pop = first(totalpop1750)) %>% 
+  arrange(desc(first))
+t1a
+
+# weighted average 
+sum(((t1a$total_pop) / sum(t1a$total_pop)) * t1a$first)
+t1b = french_main %>% filter( name %in% b) %>% 
+  group_by(name) %>% 
+  summarise(first = first(fpresence),
+            total_pop = first(totalpop1750 )) %>% 
+  arrange(desc(first))
+sum(((t1b$total_pop) / sum(t1b$total_pop)) * t1b$first)
+
+t1c = french_main %>% filter( name %in% c) %>% 
+  group_by(name) %>% 
+  summarise(first = first(fpresence)) %>% 
+  arrange(desc(first))
+sum(((t1c$total_pop) / sum(t1c$total_pop)) * t1c$first)
+```
+
+```{r}
+colSummary <- function(data) {
+  # compute urbrate 1700-1900 avg
+  years <- c(1700, 1750, 1800, 1850, 1875, 1900)
+  urb_avgs <- c()
+  for (yr in years) {
+    urb_df <- data %>% group_by(name) %>% filter(year == yr) %>%
+      summarise(first_urbrate = first(urbrate),
+                first_pop = first(totalpop1750)) %>%
+      mutate(weighted_sum = (first_urbrate * first_pop))
+    urb_avg <- sum(urb_df$weighted_sum / sum(urb_df$first_pop))
+    urb_avgs <- c(urb_avgs, urb_avg)
+  }
+  
+  # compute share protestant avg
+  protestant_df <- data %>% group_by(name) %>% 
+    summarise(first_protestant = first(protestant),
+              first_pop = first(totalpop1750)) %>%
+    mutate(weighted_sum = (first_protestant * first_pop))
+  protestant_avg <- sum(protestant_df$weighted_sum / sum(protestant_df$first_pop))
+  
+  # compute latitude avg
+  lat_df <- data %>% group_by(name) %>% 
+    summarise(first_lat = first(latitude),
+              first_pop = first(totalpop1750)) %>%
+    mutate(weighted_sum = (first_lat * first_pop))
+    lat_avg <- sum(lat_df$weighted_sum / sum(lat_df$first_pop))
+  
+  # compute longitude avg
+  long_df <- data %>% group_by(name) %>% 
+    summarise(first_long = first(longitude),
+          first_pop = first(totalpop1750)) %>%
+    mutate(weighted_sum = (first_long * first_pop))
+    long_avg <- sum(long_df$weighted_sum / sum(long_df$first_pop))
+
+  # compute distance to paris avg
+  paris_df <- data %>% group_by(name) %>% 
+    summarise(first_dist = first(distpa),
+          first_pop = first(totalpop1750)) %>%
+    mutate(weighted_sum = (first_dist * first_pop))
+  paris_avg <- sum(paris_df$weighted_sum / sum(paris_df$first_pop))
+  
+  return(c(urb_avgs, protestant_avg, lat_avg, long_avg, paris_avg))
+}
+
+# getting control west of elbe
+colSummary(na.omit(french_main) %>% filter(westelbe == 1))
+
+# getting west of elbe control
+colSummary(na.omit(french_main) %>% filter(name %in% b))
+
+# gettting treated
+colSummary(na.omit(french_main) %>% filter(name %in% a))
+
+# getting all control
+colSummary(na.omit(french_main) %>% filter(name %in% c(b, c)))
+
+# last column is everything
+colSummary(na.omit(french_main))
+
+
+
+
+```
+
+
+# Introduction
+
+Insert objective, abstract summary, and purpose of paper.
+
+# Exploratory Data Analysis
+
+## Data Overview
+
+Here we read in the data
+
+## Data Cleaning
+
+Describe cleaning
+
+## Exploratory Graphing
+
+Here we would like to compare the time-series structures of the futures data against the IO Output data we have. 
+
+
+# Modeling
+
+Insert models
+
+# Stability Analysis
+
+Insert stability of findings - check alternative data sources, cleaning techniques, etc.
+
+# Post-Hoc Exploratory Data Analysis
+
+Insert EDA post-modeling - maybe exclude.
+
+# Concluding Remarks
+
+Insert conclusions
+
+# References
