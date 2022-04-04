@@ -65,7 +65,6 @@ ggplot(data = french_main) + geom_point(aes(x = year, y = totalpop, color = name
 ```
 
 ```{r}
-
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
 
@@ -75,32 +74,6 @@ b = c("Baden", "Bavaria Old", "Hessen-Darmstadt, right of the Rhine",
 c = c( "Brandenburg", "East Prussia", "Pomerania without Swedish Pomerania",
        "Silesia", "Mecklenburg-Schwerin", "Schleswig-Holstein" )
 
-cols <- c("fpresence", "")
-
-t1a = na.omit(french_main) %>% filter( name %in% a) %>% 
-  group_by(name) %>% 
-  summarise(first = first(fpresence),
-            total_pop = first(totalpop1750)) %>% 
-  arrange(desc(first))
-t1a
-
-# weighted average 
-sum(((t1a$total_pop) / sum(t1a$total_pop)) * t1a$first)
-t1b = french_main %>% filter( name %in% b) %>% 
-  group_by(name) %>% 
-  summarise(first = first(fpresence),
-            total_pop = first(totalpop1750 )) %>% 
-  arrange(desc(first))
-sum(((t1b$total_pop) / sum(t1b$total_pop)) * t1b$first)
-
-t1c = french_main %>% filter( name %in% c) %>% 
-  group_by(name) %>% 
-  summarise(first = first(fpresence)) %>% 
-  arrange(desc(first))
-sum(((t1c$total_pop) / sum(t1c$total_pop)) * t1c$first)
-```
-
-```{r}
 colSummary <- function(data) {
   # compute urbrate 1700-1900 avg
   years <- c(1700, 1750, 1800, 1850, 1875, 1900)
