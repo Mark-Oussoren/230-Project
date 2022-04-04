@@ -1,0 +1,189 @@
+---
+title: "stat230-project"
+author: "Sharon Hui"
+date: "4/3/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Code
+
+```{r}
+# install.packages('foreign')
+library(foreign)
+library(dplyr)
+library(stringr)
+library(kableExtra)
+french_t5 = read.dta('20100816_replication_dataset_t5.dta')
+french_main = read.dta('20100816_replication_dataset.dta')
+
+a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
+       "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
+
+b <- c("Baden", "Bavaria Old" , "Hessen-Darmstadt, right of the Rhine", 
+      "Saxony", "Wuerttemberg")
+c <- c( "Brandenburg" , "East Prussia" , 
+       "Pomerania without Swedish Pomerania" , "Silesia",  
+       "Mecklenburg-Schwerin" , "Schleswig-Holstein" )
+
+```
+
+
+
+
+```{r}
+
+
+table1_maker = function(a){
+  only_a = na.omit(french_main) %>% 
+  filter( name %in% a) %>%
+  group_by(name)
+
+t1a = only_a %>% 
+  summarise(fpresence = first(fpresence),
+            total_pop = first(totalpop1750 ) ) %>% 
+  arrange(desc(fpresence))
+# t1a
+
+# weighted average for panel a
+# sum(((t1a$total_pop) / sum(t1a$total_pop)) * t1a$first)
+
+#######################
+cc = only_a %>% summarise( s = first(ccodenoalr ) , 
+             e1 =first( ccodenoalroff ) ,
+             e2 = first(ccodenoalron )  )
+
+cc2 = cbind(cc, str_remove( 
+  paste( str_remove( paste(cc$s, substr(cc$e1, 3, 4) , sep = '-') , '-$') , cc$e2, sep = ', ') , 
+  '(, 0)$'))
+
+colnames(cc2) = c("name" , "s", "e1"  , "e2", 'civil_code' )
+
+cc3 = select(cc2, name, civil_code)
+
+
+#######################
+
+serfdom = only_a %>% summarise( s = first(agreform1first ) , 
+             e1 =first( agreform1off ) ,
+             e2 = first(agreform1on )  )
+
+serfdom2 = cbind(serfdom, str_remove( 
+  paste( str_remove( paste(serfdom$s, substr(serfdom$e1, 3, 4) , sep = '-') , '-$') , serfdom$e2, sep = ', ') , 
+  '(, 0)$'))
+
+colnames(serfdom2) = c("name" , "s", "e1"  , "e2", 'serfdom' )
+
+serfdom3 = select(serfdom2, name, serfdom)
+# serfdom3
+
+
+#######################
+
+reform = only_a %>% summarise( s = first(agreform2first ) , 
+             e1 =first( agreform2off ) ,
+             e2 = first( agreform2on )  )
+
+reform2 = cbind(reform, str_remove( 
+  paste( str_remove( paste(reform$s, substr(reform$e1, 3, 4) , sep = '-') , '-$') , reform$e2, sep = ', ') , 
+  '(, 0)$'))
+
+colnames(reform2) = c("name" , "s", "e1"  , "e2", 'reform' )
+
+reform3 = select(reform2, name, reform)
+#reform3
+
+
+
+
+#######################
+
+
+guilds = only_a %>% summarise( s = first(guildsfirst ) , 
+             e1 =first( guildsoff ) ,
+             e2 = first( guildson )  )
+
+guilds2 = cbind(guilds, str_remove( 
+  paste( str_remove( paste(guilds$s, substr(guilds$e1, 3, 4) , sep = '-') , '-$') , guilds$e2, sep = ', ') , 
+  '(, 0)$'))
+
+colnames(guilds2) = c("name" , "s", "e1"  , "e2", 'guilds' )
+
+guilds3 = select(guilds2, name, guilds)
+#guilds3
+
+
+
+#######################
+
+reforms_1850 = na.omit(french_main) %>% 
+  filter( name %in% a) %>% 
+  filter( year == 1850) %>% select(name, yearsref)
+colnames(reforms_1850 ) = c('name', 'yearsref_1850')
+
+reforms_1900 = na.omit(french_main) %>% 
+  filter( name %in% a) %>% 
+  filter( year == 1900) %>% select(name, yearsref)
+colnames(reforms_1900 ) = c('name', 'yearsref_1900')
+
+
+######################
+pop_weights_1750 = only_a %>% 
+  summarise(pop_weights_1750 = round( first(totalpop1750) , -3) /1000 )
+# pop_weights_1750
+
+
+final_a = left_join( left_join (left_join(
+  left_join(left_join(left_join( left_join(t1a, cc3, by = 'name'), 
+           serfdom3, by = 'name'),
+          reform3, by = 'name') , guilds3, by = 'name' ), reforms_1850 ,by = 'name' ),
+  reforms_1900, by = 'name'
+  ), pop_weights_1750, by = 'name' )
+
+return_a = final_a
+  avg_fpresence = round( sum( return_a$fpresence * return_a$total_pop / sum(return_a$total_pop ) ),
+                         2 )
+  avg_yearsref_1850 = round( sum( return_a$yearsref_1850 * return_a$total_pop / sum(return_a$total_pop ) ),
+                          2)
+  avg_yearsref_1900 = round( sum( return_a$yearsref_1900 * return_a$total_pop / sum(return_a$total_pop ) ),
+                          2)
+  avg = c('Average', avg_fpresence, rep('', 4) , avg_yearsref_1850 , avg_yearsref_1900, '' ) 
+  return_a = select(return_a, -total_pop) 
+  
+  result = rbind(  as.matrix(return_a), avg)
+  rownames(result) = NULL
+ return( result )
+}
+
+
+
+t1a = table1_maker(a) 
+t1a = t1a[c(2, 1, 5, 7, 3, 6, 4, 8, 9),]
+
+t1b = table1_maker(b) 
+
+
+t1c = table1_maker(c)
+t1c = t1c[c(1, 2, 4, 6, 3, 5, 7),]
+
+
+
+t1a %>%
+  kbl() %>%
+  kable_styling()
+
+t1b %>%
+  kbl() %>%
+  kable_styling()
+
+t1c %>%
+  kbl() %>%
+  kable_styling()
+
+```
+
