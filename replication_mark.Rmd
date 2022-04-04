@@ -79,7 +79,7 @@ colSummary <- function(data) {
   years <- c(1700, 1750, 1800, 1850, 1875, 1900)
   urb_avgs <- c()
   for (yr in years) {
-    urb_df <- data %>% group_by(name) %>% filter(year == yr) %>%
+    urb_df <- data %>% filter(year == yr) %>% group_by(name) %>%
       summarise(first_urbrate = first(urbrate),
                 first_pop = first(totalpop1750)) %>%
       mutate(weighted_sum = (first_urbrate * first_pop))
