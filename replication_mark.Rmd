@@ -111,7 +111,10 @@ colSummary <- function(data) {
                 first_pop = first(totalpop1750)) %>%
       mutate(weighted_sum = (first_urbrate * first_pop))
     urb_avg <- sum(urb_df$weighted_sum / sum(urb_df$first_pop))
-    urb_avgs <- c(urb_avgs, urb_avg)
+    SSR <- sum((urb_df$first_pop * (urb_df$first_urbrate - urb_avg)^2))
+    N <- length(urb_df$first_urbrate)
+    urb_sdv <- sqrt(N * SSR / ((N - 1) * sum(urb_df$first_pop)))
+    urb_avgs <- c(urb_avgs, urb_avg, urb_sdv)
   }
   
   # compute share protestant avg
@@ -120,20 +123,32 @@ colSummary <- function(data) {
               first_pop = first(totalpop1750)) %>%
     mutate(weighted_sum = (first_protestant * first_pop))
   protestant_avg <- sum(protestant_df$weighted_sum / sum(protestant_df$first_pop))
-  
+  SSR <- sum((protestant_df$first_pop *
+                (protestant_df$first_protestant - protestant_avg)^2))
+  N <- length(protestant_df$first_protestant)
+  protestant_sdv <- sqrt(N * SSR / ((N - 1) * sum(protestant_df$first_pop)))
+
   # compute latitude avg
   lat_df <- data %>% group_by(name) %>% 
     summarise(first_lat = first(latitude),
               first_pop = first(totalpop1750)) %>%
     mutate(weighted_sum = (first_lat * first_pop))
-    lat_avg <- sum(lat_df$weighted_sum / sum(lat_df$first_pop))
+  lat_avg <- sum(lat_df$weighted_sum / sum(lat_df$first_pop))
+  SSR <- sum((lat_df$first_pop *
+                (lat_df$first_lat - lat_avg)^2))
+  N <- length(lat_df$first_lat)
+  lat_sdv <- sqrt(N * SSR / ((N - 1) * sum(lat_df$first_pop)))
   
   # compute longitude avg
   long_df <- data %>% group_by(name) %>% 
     summarise(first_long = first(longitude),
           first_pop = first(totalpop1750)) %>%
     mutate(weighted_sum = (first_long * first_pop))
-    long_avg <- sum(long_df$weighted_sum / sum(long_df$first_pop))
+  long_avg <- sum(long_df$weighted_sum / sum(long_df$first_pop))
+  SSR <- sum((long_df$first_pop *
+              (long_df$first_long - long_avg)^2))
+  N <- length(long_df$first_long)
+  long_sdv <- sqrt(N * SSR / ((N - 1) * sum(long_df$first_pop)))
 
   # compute distance to paris avg
   paris_df <- data %>% group_by(name) %>% 
@@ -141,28 +156,34 @@ colSummary <- function(data) {
           first_pop = first(totalpop1750)) %>%
     mutate(weighted_sum = (first_dist * first_pop))
   paris_avg <- sum(paris_df$weighted_sum / sum(paris_df$first_pop))
+  SSR <- sum((paris_df$first_pop *
+                (paris_df$first_dist - paris_avg)^2))
+  N <- length(paris_df$first_dist)
+  paris_sdv <- sqrt(N * SSR / ((N - 1) * sum(paris_df$first_pop)))
   
-  return(c(urb_avgs, protestant_avg, lat_avg, long_avg, paris_avg))
+  return(c(urb_avgs, protestant_avg, protestant_sdv,
+           lat_avg, lat_sdv, long_avg, long_sdv,
+           paris_avg, paris_sdv))
 }
 
 # getting control west of elbe
-colSummary(na.omit(french_main) %>% filter(westelbe == 1))
+first_col <- colSummary(na.omit(french_main) %>% filter(westelbe == 1))
 
 # getting west of elbe control
-colSummary(na.omit(french_main) %>% filter(name %in% b))
+second_col <- colSummary(na.omit(french_main) %>% filter(name %in% b))
 
 # gettting treated
-colSummary(na.omit(french_main) %>% filter(name %in% a))
+third_col <- colSummary(na.omit(french_main) %>% filter(name %in% a))
 
 # getting all control
-colSummary(na.omit(french_main) %>% filter(name %in% c(b, c)))
+fourth_col <- colSummary(na.omit(french_main) %>% filter(name %in% c(b, c)))
 
 # last column is everything
-colSummary(na.omit(french_main))
+fifth_col <- colSummary(na.omit(french_main))
 
-
-
-
+# combining into table
+combined_avgs <- cbind(first_col, second_col, third_col, fourth_col,
+                       fifth_col)
 ```
 
 
