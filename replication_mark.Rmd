@@ -44,12 +44,16 @@ knitr::opts_chunk$set(
   out.width = '75%', 
   fig.align = "center",  
   fig.pos = "h")
+
 knitr::knit_hooks$set(plot = function(x, options)  {
   paste0(knitr::hook_plot_tex(x, options), "\n\\FloatBarrier\n")
 })
 
 # set working directory
 setwd("~/230-Project/")
+
+# load R files
+source('R/table.R')
 
 # load french data
 french_main <- read.dta("french_main.dta")
@@ -157,6 +161,15 @@ fifth_col <- colSummary(na.omit(french_main))
 # combining into table
 combined_avgs <- cbind(first_col, second_col, third_col, fourth_col,
                        fifth_col)
+```
+
+```{r}
+row_names <- c('Urbanization in 1700', '', 'Urbanization in 1750', '',
+               'Urbanization in 1800', '', 'Urbanization in 1850', '',
+               'Urbanization in 1875', '', 'Urbanization in 1900', '',
+               'Share Protestant', '', 'Latitude', '', 'Longitude', '',
+               'Distance to Paris', '')
+table_2 <- createTable(combined_avgs, row_names)
 ```
 
 
