@@ -1,0 +1,114 @@
+---
+title: "table3"
+author: "Sharon Hui"
+date: "4/16/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+# install.packages('foreign')
+library(foreign)
+library(dplyr)
+library(stringr)
+library(kableExtra)
+library(sandwich)
+library(lmtest)
+library(lfe)
+library(dplyr)
+library(tidyr)
+library(broom)
+library(lfe)
+french_t5 = read.dta('french_t5.dta')
+french_main = read.dta('french_main.dta')
+
+a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
+       "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
+
+b <- c("Baden", "Bavaria Old" , "Hessen-Darmstadt, right of the Rhine", 
+      "Saxony", "Wuerttemberg")
+c <- c( "Brandenburg" , "East Prussia" , 
+       "Pomerania without Swedish Pomerania" , "Silesia",  
+       "Mecklenburg-Schwerin" , "Schleswig-Holstein" )
+
+keep = french_main %>%
+  filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
+```
+
+```{r}
+a_b = keep %>% filter(name %in% c(a, b) & year %in% c(1750, 1800, 1850, 1875, 1900)) %>%
+  select(name, fpresence1750, fpresence1800,  fpresence1850, fpresence1875, fpresence1900, 
+         totalpop1750,
+         yr1700, yr1750, yr1800, yr1875) %>% 
+  group_by(name) %>%
+  summarise( fpresence1750 = sum(fpresence1750),
+             fpresence1800 = sum(fpresence1800),
+             fpresence1850 = sum(fpresence1850),
+             fpresence1900 = sum(fpresence1900),
+             totalpop1750 = first(totalpop1750)
+             )
+a_b = keep %>% filter( westelbe == 1) %>%
+  select(id, urbrate, fpresence1750, fpresence1800,  
+         fpresence1850, fpresence1875,  fpresence1900, totalpop1750,
+         yr1700, yr1750, yr1800, yr1850,yr1875,
+         yr1900 )
+
+library(estimatr)
+lm_robust(urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875, data=a_b,
+          clusters = id, weights = totalpop1750,
+          fixed_effects = id, `se_type` = "stata")
+
+reg = lm(urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875, data=a_b, weights = totalpop1750)
+v_both = vcovCL(reg, type='HC2', cluster = ~id)
+coeftest(reg, v_both)
+library(plm)
+plm(urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875, data=a_b,
+    index=c("id"), model="within", weights = totalpop1750)
+
+
+felm(urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875 | id, data = a_b, weights = a_b$totalpop1750)
+```
+
+```{r}
+formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875
+plm(urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875+ fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875, data=a_b, model="within")
+```
+
+
+
+```{r}
+library(fixest)
+fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875 + yr1900 | id, 
+     data = a_b, weights = a_b$totalpop1750)
+coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))
+fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1875 + 
+       yr1900 | id, 
+     data = a_b )
+coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))
+```
+
+```{r}
+
+```
+

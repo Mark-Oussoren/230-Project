@@ -3,8 +3,8 @@ title: "stat230-project"
 author: "Sharon Hui"
 date: "4/3/2022"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -19,8 +19,8 @@ library(foreign)
 library(dplyr)
 library(stringr)
 library(kableExtra)
-french_t5 = read.dta('20100816_replication_dataset_t5.dta')
-french_main = read.dta('20100816_replication_dataset.dta')
+french_t5 = read.dta('french_t5.dta')
+french_main = read.dta('french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
@@ -172,6 +172,23 @@ t1c = table1_maker(c)
 t1c = t1c[c(1, 2, 4, 6, 3, 5, 7),]
 
 
+# install.packages('reactable')
+library(reactable)
+col_table1 = c('Country','Years of French presence', 'Civil code', 'Abolition of serfdom', 'Agrarian reform', 'Abolition of guilds', 'Reforms index as of 1850', 'Reforms index as of 1900', 'Pop. weights')
+
+col2_table1 = c('Country','Years of<br>French presence', 'Civil code', 'Abolition of<br>serfdom', 'Agrarian reform', 'Abolition<br>of guilds', 'Reforms index<br>as of 1850', 'Reforms index<br>as of 1900', 'Pop. weights')
+colnames(t1a) = col_table1
+
+
+
+library(stargazer)
+
+stargazer(t1a,  
+          column.labels = col2_table1,
+          summary = FALSE,
+          type = "latex",
+          no.space = TRUE
+          )
 
 t1a %>%
   kbl() %>%
@@ -181,9 +198,19 @@ t1b %>%
   kbl() %>%
   kable_styling()
 
+stargazer(t1b,  
+          summary = FALSE,
+          type = "latex",
+          no.space = TRUE
+          )
+
 t1c %>%
   kbl() %>%
   kable_styling()
-
+stargazer(t1c,  
+          summary = FALSE,
+          type = "latex",
+          no.space = TRUE
+          )
 ```
 

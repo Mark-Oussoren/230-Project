@@ -624,8 +624,8 @@ library(kableExtra)</code></pre>
 <pre><code>## The following object is masked from &#39;package:dplyr&#39;:
 ## 
 ##     group_rows</code></pre>
-<pre class="r"><code>french_t5 = read.dta(&#39;20100816_replication_dataset_t5.dta&#39;)
-french_main = read.dta(&#39;20100816_replication_dataset.dta&#39;)
+<pre class="r"><code>french_t5 = read.dta(&#39;french_t5.dta&#39;)
+french_main = read.dta(&#39;french_main.dta&#39;)
 
 a &lt;- c(&quot;Rhineland&quot;, &quot;Bavarian Palatinate&quot;, &quot;Mark&quot;, &quot;Westphalia without Mark&quot;,
        &quot;Brunswick&quot;, &quot;Saxony Province&quot;, &quot;Hessen-Kassel&quot;, &quot;Hanover&quot;)
@@ -768,39 +768,70 @@ t1c = table1_maker(c)
 t1c = t1c[c(1, 2, 4, 6, 3, 5, 7),]
 
 
+# install.packages(&#39;reactable&#39;)
+library(reactable)</code></pre>
+<pre><code>## Warning: package &#39;reactable&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code>col_table1 = c(&#39;Country&#39;,&#39;Years of French presence&#39;, &#39;Civil code&#39;, &#39;Abolition of serfdom&#39;, &#39;Agrarian reform&#39;, &#39;Abolition of guilds&#39;, &#39;Reforms index as of 1850&#39;, &#39;Reforms index as of 1900&#39;, &#39;Pop. weights&#39;)
+colnames(t1a) = col_table1
 
-t1a %&gt;%
+
+
+library(stargazer)</code></pre>
+<pre><code>## 
+## Please cite as:</code></pre>
+<pre><code>##  Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+<pre><code>##  R package version 5.2.3. https://CRAN.R-project.org/package=stargazer</code></pre>
+<pre class="r"><code>stargazer(t1a,  
+          column.labels = col_table1,
+          summary = FALSE,
+          type = &quot;text&quot;,
+          out = &quot;data_stargazer_txt.txt&quot;)</code></pre>
+<pre><code>## 
+## ======================================================================================================================================================================================
+## Country                 Years of French presence  Civil code   Abolition of serfdom Agrarian reform Abolition of guilds Reforms index as of 1850 Reforms index as of 1900 Pop. weights
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Rhineland                          19                1802              1798              1804              1795                  50.25                    100.25              1439    
+## Bavarian Palatinate                19                1802              1798              1804              1795                  50.25                    100.25              239     
+## Mark                               6             1810-15, 1900         1808              1825              1809                  28.25                    65.75               150     
+## Westphalia without Mark            6             1810-15, 1900         1808              1825              1809                  28.25                    65.75               529     
+## Brunswick                          6             1808-14, 1900    1808-18, 1834      1809-18, 1834     1808-15, 1864             16.00                    50.00               155     
+## Saxony Province                    6             1808-15, 1900         1808              1809              1809                  32.75                    70.25               763     
+## Hessen-Kassel                      6             1808-14, 1900    1808-14, 1832      1809-14, 1832     1808-16, 1869             15.25                    48.00               294     
+## Hanover                            3             1808-13, 1900    1808-14, 1833      1809-14, 1833     1808-15, 1869             14.25                    47.00               1090    
+## Average                           9.98                                                                                           32.41                    72.88                       
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</code></pre>
+<pre class="r"><code>t1a %&gt;%
   kbl() %&gt;%
   kable_styling()</code></pre>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
-name
+Country
 </th>
 <th style="text-align:left;">
-fpresence
+Years of French presence
 </th>
 <th style="text-align:left;">
-civil_code
+Civil code
 </th>
 <th style="text-align:left;">
-serfdom
+Abolition of serfdom
 </th>
 <th style="text-align:left;">
-reform
+Agrarian reform
 </th>
 <th style="text-align:left;">
-guilds
+Abolition of guilds
 </th>
 <th style="text-align:left;">
-yearsref_1850
+Reforms index as of 1850
 </th>
 <th style="text-align:left;">
-yearsref_1900
+Reforms index as of 1900
 </th>
 <th style="text-align:left;">
-pop_weights_1750
+Pop. weights
 </th>
 </tr>
 </thead>
