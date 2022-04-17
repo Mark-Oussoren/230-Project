@@ -41,9 +41,10 @@ table4_1 = keep %>%
   filter(westelbe==1 & id!=2)
 fe4_1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_1, weights = table4_1$totalpop1750)
 coeftest(fe4_1 , vcov = vcovHAC(fe4_1, type="HC1"))
+coeftest(fe4_1)
 ```
 
 
@@ -55,9 +56,15 @@ fe4_2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
            fpresence1850 + fpresence1875 + fpresence1900 + 
             protestant1750 + protestant1800 + protestant1850 + 
              protestant1875 + protestant1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_2, weights = table4_2$totalpop1750)
-coeftest(fe4_2 , vcov = vcovHAC(fe4_2, type="HC1"))
+coeftest(fe4_2 , vcov = vcovHC(fe4_2, type="HC1", cluster = "id"))
+coeftest(fe4_2)
+
+linearHypothesis(fe4_2, c("protestant1750=0", "protestant1800=0", 
+                          "protestant1850=0", "protestant1875=0",
+                          "protestant1900=0"), test = c("F"),
+                 vcov. = vcovHAC(fe4_2, type="HC2"))
 ```
 
 
@@ -70,9 +77,15 @@ fe4_3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
            fpresence1850 + fpresence1875 + fpresence1900 + 
             latitude1750 + latitude1800 + latitude1850 + 
              latitude1875 + latitude1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_3, weights = table4_3$totalpop1750)
-coeftest(fe4_3 , vcov = vcovHAC(fe4_3, type="HC1"))
+coeftest(fe4_3  )
+
+
+linearHypothesis(fe4_3, c("latitude1750=0", "latitude1800=0", 
+                          "latitude1850=0", "latitude1875=0",
+                          "latitude1900=0"), test = c("F"),
+                 vcov. = vcovHAC(fe4_3, type="HC2"))
 ```
 
 
@@ -86,9 +99,9 @@ fe4_4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
            fpresence1850 + fpresence1875 + fpresence1900 + 
             longitude1750 + longitude1800 + longitude1850 + 
              longitude1875 + longitude1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_4, weights = table4_4$totalpop1750)
-coeftest(fe4_4 , vcov = vcovHAC(fe4_4, type="HC1"))
+coeftest(fe4_4 )
 ```
 
 
@@ -102,9 +115,9 @@ fe4_5 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
            fpresence1850 + fpresence1875 + fpresence1900 + 
             distpa1750 + distpa1800 + distpa1850 + 
              distpa1875 + distpa1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_5, weights = table4_5$totalpop1750)
-coeftest(fe4_5 , vcov = vcovHAC(fe4_5, type="HC1"))
+coeftest(fe4_5  )
 ```
 
 
@@ -118,9 +131,9 @@ fe4_6 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
            fpresence1850 + fpresence1875 + fpresence1900 + 
             territories1850 + 
              territories1875 + territories1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_6, weights = table4_6$totalpop1750)
-coeftest(fe4_6 , vcov = vcovHAC(fe4_6, type="HC1"))
+coeftest(fe4_6 )
 ```
 
 
