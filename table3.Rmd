@@ -89,15 +89,17 @@ felm(urbrate ~ fpresence1750 + fpresence1800 +
 ```{r}
 fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + yr1850 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
      data = a_b, weights = a_b$totalpop1750)
-coef1 <- coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))[,1]
+co11 <- coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))[1:5,1]
+col1 <- c(col1, dim(drop_na(a_b))[1])
 fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + 
-       yr1850 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + 
+       yr1875 | id, 
      data = a_b )
-coef2 <- coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))[,1]
+co12 <- coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))[1:5,1]
+col2 <- c(col2, dim(drop_na(a_b))[1])
 ```
 
 
@@ -106,16 +108,19 @@ coef2 <- coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))[,1]
 ```{r}
 fe3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + yr1850 | factor(id), 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | factor(id), 
      data = keep, weights = keep$totalpop1750)
 # vcovHC doesn't give the same standard errors
-coef3 <- coeftest(fe3 , vcov = vcovHC(fe3, type="HC0"))[,1]
+col3 <- coeftest(fe3 , vcov = vcovHC(fe3, type="HC0"))[1:5, 1]
+col3 <- c(col3, dim(drop_na(keep))[1])
+
 fe4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + 
-       yr1850 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + 
+       yr1875 | id, 
      data = keep )
-coef4 <- coeftest(fe4, vcov = vcovHC(fe4, type="HC0"))[,1]
+col4 <- coeftest(fe4, vcov = vcovHC(fe4, type="HC0"))[1:5, 1]
+col4 <- c(col4, dim(drop_na(keep))[1])
 
 ```
 
