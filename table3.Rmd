@@ -20,6 +20,7 @@ library(kableExtra)
 library(sandwich)
 library(lmtest)
 library(lfe)
+library(car)
 library(dplyr)
 library(tidyr)
 library(broom)
@@ -39,51 +40,13 @@ c <- c( "Brandenburg" , "East Prussia" ,
 
 keep = french_main %>%
   filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
-```
 
-```{r}
-a_b = keep %>% filter(name %in% c(a, b) & year %in% c(1750, 1800, 1850, 1875, 1900)) %>%
-  select(name, fpresence1750, fpresence1800,  fpresence1850, fpresence1875, fpresence1900, 
-         totalpop1750,
-         yr1700, yr1750, yr1800, yr1875) %>% 
-  group_by(name) %>%
-  summarise( fpresence1750 = sum(fpresence1750),
-             fpresence1800 = sum(fpresence1800),
-             fpresence1850 = sum(fpresence1850),
-             fpresence1900 = sum(fpresence1900),
-             totalpop1750 = first(totalpop1750)
-             )
 a_b = keep %>% filter( westelbe == 1) %>%
   select(id, urbrate, fpresence1750, fpresence1800,  
          fpresence1850, fpresence1875,  fpresence1900, totalpop1750,
          yr1700, yr1750, yr1800, yr1850,yr1875,
          yr1900 )
-
-library(estimatr)
-lm_robust(urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875, data=a_b,
-          clusters = id, weights = totalpop1750,
-          fixed_effects = id, `se_type` = "stata")
-
-reg = lm(urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875, data=a_b, weights = totalpop1750)
-v_both = vcovCL(reg, type='HC2', cluster = ~id)
-coeftest(reg, v_both)
-library(plm)
-plm(urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875, data=a_b,
-    index=c("id"), model="within", weights = totalpop1750)
-
-
-felm(urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 | id, data = a_b, weights = a_b$totalpop1750)
 ```
-
-
 
 
 ```{r}
@@ -95,7 +58,8 @@ fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
      data = a_b, weights = a_b$totalpop1750)
 res1 <- coeftest(fe1)
 col1 <- c(rbind(res1[1:5,1], res1[1:5,2]))
-joint_pval1 <- 0
+joint_pval1 <- linearHypothesis(fe1, c("fpresence1850=0", "fpresence1875=0",
+                                       "fpresence1900=0"), test = c("F"))$`Pr(>F)`[2]
 col1 <- c(col1, 0, dim(drop_na(a_b))[1], length(unique(drop_na(a_b)$id)), joint_pval1)
 
 fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -105,7 +69,8 @@ fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
      data = a_b )
 res2 <- coeftest(fe2)
 col2 <- c(rbind(res2[1:5,1], res2[1:5,2]))
-joint_pval2 <- 0
+joint_pval2 <- linearHypothesis(fe2, c("fpresence1850=0", "fpresence1875=0",
+                                       "fpresence1900=0"), test = c("F"))$`Pr(>F)`[2]
 col2 <- c(col2, 0, dim(drop_na(a_b))[1], length(unique(drop_na(a_b)$id)), joint_pval2)
 
 fe3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -115,7 +80,8 @@ fe3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
 
 res3 <- coeftest(fe3)
 col3 <- c(rbind(res3[1:5,1], res3[1:5,2]))
-joint_pval3 <- 0
+joint_pval3 <- linearHypothesis(fe3, c("fpresence1850=0", "fpresence1875=0",
+                                       "fpresence1900=0"), test = c("F"))$`Pr(>F)`[2]
 col3 <- c(col3, 0, dim(drop_na(keep))[1], length(unique(drop_na(keep)$id)), joint_pval3)
 
 fe4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -125,7 +91,8 @@ fe4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
      data = keep )
 res4 <- coeftest(fe4)
 col4 <- c(rbind(res4[1:5,1], res4[1:5,2]))
-joint_pval4 <- 0
+joint_pval4 <- linearHypothesis(fe4, c("fpresence1850=0", "fpresence1875=0",
+                                       "fpresence1900=0"), test = c("F"))$`Pr(>F)`[2]
 col4 <- c(col4, 0, dim(drop_na(keep))[1], length(unique(drop_na(keep)$id)), joint_pval4)
 ```
 
