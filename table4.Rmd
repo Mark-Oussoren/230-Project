@@ -1,0 +1,144 @@
+---
+title: "table4"
+author: "Sharon Hui"
+date: "4/16/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Table 4
+
+
+```{r}
+library(dplyr)
+library(foreign)
+library(lfe)
+library(lmtest)
+
+french_t5 = read.dta('french_t5.dta')
+french_main = read.dta('french_main.dta')
+
+a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
+       "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
+
+b <- c("Baden", "Bavaria Old" , "Hessen-Darmstadt, right of the Rhine", 
+      "Saxony", "Wuerttemberg")
+c <- c( "Brandenburg" , "East Prussia" , 
+       "Pomerania without Swedish Pomerania" , "Silesia",  
+       "Mecklenburg-Schwerin" , "Schleswig-Holstein" )
+
+keep = french_main %>%
+  filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
+
+```
+
+
+```{r}
+table4_1 = keep %>% 
+  filter(westelbe==1 & id!=2)
+fe4_1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_1, weights = table4_1$totalpop1750)
+coeftest(fe4_1 , vcov = vcovHAC(fe4_1, type="HC1"))
+```
+
+
+
+```{r}
+table4_2 = keep %>% 
+  filter( westelbe==1 )
+fe4_2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            protestant1750 + protestant1800 + protestant1850 + 
+             protestant1875 + protestant1900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_2, weights = table4_2$totalpop1750)
+coeftest(fe4_2 , vcov = vcovHAC(fe4_2, type="HC1"))
+```
+
+
+
+
+```{r}
+table4_3 = keep %>% 
+  filter( westelbe==1 )
+fe4_3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            latitude1750 + latitude1800 + latitude1850 + 
+             latitude1875 + latitude1900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_3, weights = table4_3$totalpop1750)
+coeftest(fe4_3 , vcov = vcovHAC(fe4_3, type="HC1"))
+```
+
+
+
+
+
+```{r}
+table4_4 = keep %>% 
+  filter( westelbe==1 )
+fe4_4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            longitude1750 + longitude1800 + longitude1850 + 
+             longitude1875 + longitude1900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_4, weights = table4_4$totalpop1750)
+coeftest(fe4_4 , vcov = vcovHAC(fe4_4, type="HC1"))
+```
+
+
+
+
+
+```{r}
+table4_5 = keep %>% 
+  filter( westelbe==1 )
+fe4_5 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            distpa1750 + distpa1800 + distpa1850 + 
+             distpa1875 + distpa1900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_5, weights = table4_5$totalpop1750)
+coeftest(fe4_5 , vcov = vcovHAC(fe4_5, type="HC1"))
+```
+
+
+
+
+
+```{r}
+table4_6 = keep %>% 
+  filter( westelbe==1 )
+fe4_6 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            territories1850 + 
+             territories1875 + territories1900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_6, weights = table4_6$totalpop1750)
+coeftest(fe4_6 , vcov = vcovHAC(fe4_6, type="HC1"))
+```
+
+
+
+
+
+
+
+```{r}
+table4_7 = keep %>% 
+  filter( westelbe==1 )
+fe4_7 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
+           fpresence1850 + fpresence1875 + fpresence1900 + 
+            urbanization17501800 + urbanization17501850 + 
+             urbanization17501875 + urbanization17501900+
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+     data = table4_7, weights = table4_7$totalpop1750)
+coeftest(fe4_7 , vcov = vcovHAC(fe4_7, type="HC1"))
+```
+
+
