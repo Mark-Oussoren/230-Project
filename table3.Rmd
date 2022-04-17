@@ -91,41 +91,42 @@ col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1750
 
 fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id, 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = a_b, weights = a_b$totalpop1750)
-res1 <- coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))
+res1 <- coeftest(fe1)
 col1 <- c(rbind(res1[1:5,1], res1[1:5,2]))
 joint_pval1 <- 0
-col1 <- c(col1, 0, dim(drop_na(a_b))[1], length(unique(a_b)), joint_pval1)
+col1 <- c(col1, 0, dim(drop_na(a_b))[1], length(unique(drop_na(a_b)$id)), joint_pval1)
+
 fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
            yr1700 + yr1750 + yr1800 + yr1850 + 
-       yr1875 | id, 
+       yr1875 | id | 0 | id, 
      data = a_b )
-res2 <- coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))
+res2 <- coeftest(fe2)
 col2 <- c(rbind(res2[1:5,1], res2[1:5,2]))
 joint_pval2 <- 0
-col2 <- c(col2, 0, dim(drop_na(a_b))[1], length(unique(a_b)), joint_pval2)
+col2 <- c(col2, 0, dim(drop_na(a_b))[1], length(unique(drop_na(a_b)$id)), joint_pval2)
 
 fe3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | factor(id), 
+           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = keep, weights = keep$totalpop1750)
-# vcovHC doesn't give the same standard errors
-res3 <- coeftest(fe3 , vcov = vcovHC(fe3, type="HC0"))
+
+res3 <- coeftest(fe3)
 col3 <- c(rbind(res3[1:5,1], res3[1:5,2]))
 joint_pval3 <- 0
-col3 <- c(col3, 0, dim(drop_na(keep))[1], length(unique(keep)), joint_pval3)
+col3 <- c(col3, 0, dim(drop_na(keep))[1], length(unique(drop_na(keep)$id)), joint_pval3)
 
 fe4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
            yr1700 + yr1750 + yr1800 + yr1850 + 
-       yr1875 | id, 
+       yr1875 | id | 0 | id, 
      data = keep )
-res4 <- coeftest(fe4, vcov = vcovHC(fe4, type="HC0"))
+res4 <- coeftest(fe4)
 col4 <- c(rbind(res4[1:5,1], res4[1:5,2]))
 joint_pval4 <- 0
-col4 <- c(col4, 0, dim(drop_na(keep))[1], length(unique(keep)), joint_pval4)
+col4 <- c(col4, 0, dim(drop_na(keep))[1], length(unique(drop_na(keep)$id)), joint_pval4)
 ```
 
 
