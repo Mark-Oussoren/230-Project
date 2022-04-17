@@ -15,13 +15,12 @@ createTable <- function(data, row_names) {
     # paste the row name at the beginning of the string
     if (include_row_names & i != 1) {
       table_str <- paste(table_str, row_names[i], sep = " \\ ")
-    } else {
+    } else if (include_row_names & i == 1) {
       table_str <- paste(table_str, row_names[i], sep = "")
-    }
-    
+    } 
     
     for (j in 1:col_dim) {
-      table_str <- paste(table_str, data[i, j], sep = " \\ ")
+      table_str <- paste(table_str, data[i, j], sep = " & ")
     }
   }
   

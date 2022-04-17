@@ -89,34 +89,33 @@ felm(urbrate ~ fpresence1750 + fpresence1800 +
 ```{r}
 fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + yr1900 | id, 
+           yr1700 + yr1750 + yr1800 + yr1875 + yr1850 | id, 
      data = a_b, weights = a_b$totalpop1750)
-coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))
+coef1 <- coeftest(fe1 , vcov = vcovHAC(fe1, type="HC1"))[,1]
 fe2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
            yr1700 + yr1750 + yr1800 + yr1875 + 
-       yr1900 | id, 
+       yr1850 | id, 
      data = a_b )
-coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))
+coef2 <- coeftest(fe2, vcov = vcovHAC(fe2, type="HC1"))[,1]
 ```
 
 
 
 
 ```{r}
-library(fixest)
-
 fe3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1875 + yr1900 | factor(id), 
+           yr1700 + yr1750 + yr1800 + yr1875 + yr1850 | factor(id), 
      data = keep, weights = keep$totalpop1750)
 # vcovHC doesn't give the same standard errors
-coeftest(fe3 , vcov = vcovHC(fe3, type="HC0"))
+coef3 <- coeftest(fe3 , vcov = vcovHC(fe3, type="HC0"))[,1]
 fe4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 
            yr1700 + yr1750 + yr1800 + yr1875 + 
-       yr1900 | id, 
+       yr1850 | id, 
      data = keep )
-coeftest(fe4, vcov = vcovHC(fe4, type="HC0"))
+coef4 <- coeftest(fe4, vcov = vcovHC(fe4, type="HC0"))[,1]
+
 ```
 
