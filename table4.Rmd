@@ -34,6 +34,7 @@ c <- c( "Brandenburg" , "East Prussia" ,
 keep = french_main %>%
   filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
 
+
 ```
 
 
@@ -192,6 +193,13 @@ linearHypothesis(fe4_7, c("urbanization17501800=0", "urbanization17501850=0",
 
 ```{r}
 
+keep2 = keep %>%
+  filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1900 )
+keep2 = keep2 %>% filter(westelbe == 1)
+keep2['year'] = keep2['year'] / 50
+
+pgmm(dynformula(lag(urbrate) ~ fpresence1800 + fpresence1850 + fpresence1900 + 
+       yr1750 + yr1850 + yr1900) )
 ```
 
 
