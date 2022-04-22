@@ -33,75 +33,88 @@ c <- c( "Brandenburg" , "East Prussia" ,
 
 keep = french_main %>%
   filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
-
-
 ```
 
 
 ```{r}
+# without mark/ruhr
 table4_1 = keep %>% 
   filter(westelbe==1 & id!=2)
 fe4_1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1875 + fpresence1900 + 
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
+               fpresence1850 + fpresence1875 + fpresence1900 + 
+               yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_1, weights = table4_1$totalpop1750)
-coeftest(fe4_1)
-
-
-linearHypothesis(fe4_1, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
+coef1 <- coeftest(fe4_1)
+data_count <- dim(drop_na(table4_1))[1]
+state_count <- length(unique(table4_1$name))
+pval1 <- linearHypothesis(fe4_1, c("fpresence1850=0", 
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- 0
+col1 <- c(rbind(coef1[1:5, 1], coef1[1:5, 2]))
+col1 <- c(col1, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
 ```{r}
+# Protestant
 table4_2 = keep %>% 
   filter( westelbe==1 )
 fe4_2 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1875 + fpresence1900 + 
-            protestant1750 + protestant1800 + protestant1850 + 
-             protestant1875 + protestant1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
+               fpresence1850 + fpresence1875 + fpresence1900 + 
+               protestant1750 + protestant1800 + protestant1850 + 
+               protestant1875 + protestant1900 +
+               yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_2, weights = table4_2$totalpop1750)
-coeftest(fe4_2)
-
-
-linearHypothesis(fe4_2, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_2, c("protestant1750=0", "protestant1800=0", 
-                          "protestant1850=0", "protestant1875=0",
-                          "protestant1900=0"), test = c("F"))
+coef2 <- coeftest(fe4_2)
+data_count <- dim(drop_na(table4_2))[1]
+state_count <- length(unique(table4_2$name))
+pval1 <- linearHypothesis(fe4_2, c("fpresence1850=0",
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"), 
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_2, c("protestant1750=0",
+                                   "protestant1800=0", 
+                                   "protestant1850=0",
+                                   "protestant1875=0",
+                                   "protestant1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+col2 <- c(rbind(coef2[1:5, 1], coef1[1:5, 2]))
+col2 <- c(col2, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
-
 ```{r}
+# Latitude
 table4_3 = keep %>% 
   filter( westelbe==1 )
 fe4_3 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1875 + fpresence1900 + 
-            latitude1750 + latitude1800 + latitude1850 + 
-             latitude1875 + latitude1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
+               fpresence1850 + fpresence1875 + fpresence1900 + 
+               latitude1750 + latitude1800 + latitude1850 + 
+               latitude1875 + latitude1900 +
+               yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_3, weights = table4_3$totalpop1750)
-coeftest(fe4_3  )
-
-
-linearHypothesis(fe4_3, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_3, c("latitude1750=0", "latitude1800=0", 
-                          "latitude1850=0", "latitude1875=0",
-                          "latitude1900=0"), test = c("F"))
+coef3 <- coeftest(fe4_3)
+data_count <- dim(drop_na(table4_3))[1]
+state_count <- length(unique(table4_3$name))
+pval1 <- linearHypothesis(fe4_3, c("fpresence1850=0",
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_3, c("latitude1750=0",
+                                   "latitude1800=0", 
+                                   "latitude1850=0",
+                                   "latitude1875=0",
+                                   "latitude1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+col3 <- c(rbind(coef3[1:5, 1], coef3[1:5, 2]))
+col3 <- c(col3, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
-
-
 ```{r}
+# Longitude
 table4_4 = keep %>% 
   filter( westelbe==1 )
 fe4_4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -110,21 +123,26 @@ fe4_4 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
              longitude1875 + longitude1900+
            yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_4, weights = table4_4$totalpop1750)
-coeftest(fe4_4 )
-
-linearHypothesis(fe4_4, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_4, c("longitude1750=0", "longitude1800=0", 
-                          "longitude1850=0", "longitude1875=0",
-                          "longitude1900=0"), test = c("F"))
+coef4 <- coeftest(fe4_4)
+data_count <- dim(drop_na(table4_4))[1]
+state_count <- length(unique(table4_4$name))
+pval1 <- linearHypothesis(fe4_4, c("fpresence1850=0",
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_4, c("longitude1750=0",
+                                   "longitude1800=0", 
+                                   "longitude1850=0", 
+                                   "longitude1875=0",
+                                   "longitude1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+col4 <- c(rbind(coef4[1:5, 1], coef4[1:5, 2]))
+col4 <- c(col4, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
-
-
 ```{r}
+# Distance to Paris
 table4_5 = keep %>% 
   filter( westelbe==1 )
 fe4_5 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -133,45 +151,51 @@ fe4_5 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
              distpa1875 + distpa1900+
            yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
      data = table4_5, weights = table4_5$totalpop1750)
-coeftest(fe4_5  )
-
-linearHypothesis(fe4_5, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_5, c("distpa1750=0", "distpa1800=0", 
-                          "distpa1850=0", "distpa1875=0",
-                          "distpa1900=0"), test = c("F"))
+coef5 <- coeftest(fe4_5)
+data_count <- dim(drop_na(table4_5))[1]
+state_count <- length(unique(table4_5$name))
+pval1 <- linearHypothesis(fe4_5, c("fpresence1850=0",
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_5, c("distpa1750=0",
+                                   "distpa1800=0", 
+                                   "distpa1850=0", 
+                                   "distpa1875=0",
+                                   "distpa1900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+col5 <- c(rbind(coef5[1:5, 1], coef5[1:5, 2]))
+col5 <- c(col5, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
-
-
 ```{r}
+# Number of old territories
 table4_6 = keep %>% 
   filter( westelbe==1 )
 fe4_6 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
-           fpresence1850 + fpresence1875 + fpresence1900 + 
-            territories1850 + 
-             territories1875 + territories1900+
-           yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
-     data = table4_6, weights = table4_6$totalpop1750)
-coeftest(fe4_6 )
-
-linearHypothesis(fe4_6, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_6, c("territories1850=0", "territories1875=0", 
-                          "territories1900=0" ), test = c("F"))
+               fpresence1850 + fpresence1875 + fpresence1900 + 
+               territories1850 + territories1875 + territories1900 +
+               yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
+           data = table4_6, weights = table4_6$totalpop1750)
+coef6 <- coeftest(fe4_6)
+data_count <- dim(drop_na(table4_6))[1]
+state_count <- length(unique(table4_6$name))
+pval1 <- linearHypothesis(fe4_6, c("fpresence1850=0", 
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"), 
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_6, c("territories1850=0",
+                                   "territories1875=0", 
+                                   "territories1900=0"), 
+                          test = c("F"))$`Pr(>F)`[2]
+col6 <- c(rbind(coef6[1:5, 1], coef6[1:5, 2]))
+col6 <- c(col6, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
 
-
-
-
-
-
 ```{r}
+# Initial urbanization
 table4_7 = keep %>% 
   filter( westelbe==1 )
 fe4_7 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
@@ -180,16 +204,26 @@ fe4_7 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 +
              urbanization17501875 + urbanization17501900+
            yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id , 
      data = table4_7, weights = table4_7$totalpop1750)
-coeftest( fe4_7 )
-
-linearHypothesis(fe4_7, c("fpresence1850=0", "fpresence1875=0", 
-                          "fpresence1900=0"), test = c("F"))
-
-linearHypothesis(fe4_7, c("urbanization17501800=0", "urbanization17501850=0", 
-                          "urbanization17501875=0" , 
-                          "urbanization17501900=0" ), test = c("F"))
+coef7 <- coeftest(fe4_7)
+data_count <- dim(drop_na(table4_7))[1]
+state_count <- length(unique(table4_7$name))
+pval1 <- linearHypothesis(fe4_7, c("fpresence1850=0",
+                                   "fpresence1875=0", 
+                                   "fpresence1900=0"), 
+                          test = c("F"))$`Pr(>F)`[2]
+pval2 <- linearHypothesis(fe4_7, c("urbanization17501800=0", 
+                                   "urbanization17501850=0", 
+                                   "urbanization17501875=0", 
+                                   "urbanization17501900=0"),
+                          test = c("F"))$`Pr(>F)`[2]
+col7 <- c(rbind(coef7[1:5, 1], coef7[1:5, 2]))
+col7 <- c(col7, 0, 0, data_count, state_count, pval1, pval2)
 ```
 
+```{r}
+# table missing the last column
+cbind(col1, col2, col3, col4, col5, col6, col7)
+```
 
 ```{r}
 
