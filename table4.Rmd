@@ -239,4 +239,14 @@ pgmm(formula = urbrate ~ lag(urbrate, 1) + fpresence1800 + fpresence1850 +
      data = keep2, gmm.inst = ~urbrate + lag(urbrate, 1) + fpresence1800 + fpresence1850 + fpresence1900 + yr1750 + yr1850 + yr1900)
 ```
 
+### Sharon's attempt
+
+
+```{r}
+z1 <- pgmm( urbrate  ~ lag(log(urbrate), 1:2) + fpresence1800 + fpresence1850 + fpresence1900 + 
+       yr1750 + yr1850 + yr1900,
+            data = EmplUK, effect = "twoways", model = "twosteps")
+summary(z1, robust = FALSE)
+```
+
 
