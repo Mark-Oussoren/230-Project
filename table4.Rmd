@@ -18,6 +18,8 @@ library(foreign)
 library(lfe)
 library(lmtest)
 library(car)
+library(tidyr)
+library(plm)
 
 french_t5 = read.dta('french_t5.dta')
 french_main = read.dta('french_main.dta')
