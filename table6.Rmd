@@ -38,6 +38,15 @@ keep = french_main %>%
   filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )
 ```
 
+Note: yearsref is the reforms index.
+
+```{r}
+table6_1 = keep %>% 
+  filter(westelbe==1 )
+fe6_1 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_1, weights = table6_1$totalpop1750)
+coeftest(fe6_1)
+```
 
 
 
