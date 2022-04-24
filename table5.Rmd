@@ -1,0 +1,92 @@
+---
+title: "table 5"
+author: "Spring 2022"
+date: "4/23/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Table 5
+
+```{r}
+library(dplyr)
+library(foreign)
+library(lfe)
+library(lmtest)
+library(car)
+library(tidyr)
+library(plm)
+library(fixest)
+library(sandwich)
+
+french_t5 = read.dta('french_t5.dta')
+french_main = read.dta('french_main.dta')
+
+a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
+       "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
+
+b <- c("Baden", "Bavaria Old" , "Hessen-Darmstadt, right of the Rhine", 
+      "Saxony", "Wuerttemberg")
+c <- c( "Brandenburg" , "East Prussia" , 
+       "Pomerania without Swedish Pomerania" , "Silesia",  
+       "Mecklenburg-Schwerin" , "Schleswig-Holstein" )
+
+keep = french_t5 %>%
+  filter(year <= 1914 )
+timeperiods = unique(keep$year)
+
+for (X in timeperiods){
+  table_5_1 = filter(keep, year == X & imputed==0 & westelbe==1)
+  lm_5_1 = feols(agric ~ fpresence  , cluster = ~ state, data = table_5_1, weights = table_5_1$pop1849)
+  print(lm_5_1$coefficients)
+  print(lm_5_1$se)
+  }
+
+
+
+for (X in timeperiods){
+  table_5_1 = filter(keep, year == X & imputed==0 & westelbe==1)
+  lm_5_1 = feols(agric ~ fpresence  , cluster = ~ state, data = table_5_1 )
+  print(lm_5_1$coefficients)
+  print(lm_5_1$se)
+  }
+
+
+
+for (X in timeperiods){
+  table_5_1 = filter(keep, year == X & imputed==0& westelbe==1)
+  lm_5_1 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_1 , weights = table_5_1$pop1849)
+  print(lm_5_1$coefficients)
+  print(lm_5_1$se)
+  }
+
+
+###
+
+for (X in timeperiods){
+  table_5_1 = filter(keep, year == X & imputed==0 & westelbe==1)
+  lm_5_1 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_1 )
+  print(lm_5_1$coefficients)
+  print(lm_5_1$se)
+  }
+
+
+
+for (X in timeperiods){
+  table_5_1 = filter(keep, year == X & imputed==0)
+  lm_5_1 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_1 , weights = table_5_1$pop1849)
+  print(lm_5_1$coefficients)
+  print(lm_5_1$se)
+  }
+
+
+
+```
+
+
+
+
+
