@@ -234,8 +234,9 @@ keep2 = keep %>%
 keep2 = keep2 %>% filter(westelbe == 1)
 keep2['year'] = keep2['year'] / 50
 
-pgmm(dynformula(lag(urbrate) ~ fpresence1800 + fpresence1850 + fpresence1900 + 
-       yr1750 + yr1850 + yr1900) )
+pgmm(formula = urbrate ~ lag(urbrate, 1) + fpresence1800 + fpresence1850 + 
+       fpresence1900 + yr1750 + yr1850 + yr1900,
+     data = keep2, gmm.inst = ~urbrate + lag(urbrate, 1) + fpresence1800 + fpresence1850 + fpresence1900 + yr1750 + yr1850 + yr1900)
 ```
 
 
