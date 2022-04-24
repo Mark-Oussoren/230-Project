@@ -445,7 +445,8 @@ c &lt;- c( &quot;Brandenburg&quot; , &quot;East Prussia&quot; ,
 keep = french_main %&gt;%
   filter(year==1700 | year==1750 | year==1800 | year==1850 | year==1875 | year==1900 )</code></pre>
 <p>Note: yearsref is the reforms index.</p>
-<pre class="r"><code>table6_1 = keep %&gt;% 
+<pre class="r"><code># *** Column 1, Panels A-C: Baseline (weighted)
+table6_1 = keep %&gt;% 
   filter(westelbe==1 )
 fe6_1 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
      data = table6_1, weights = table6_1$totalpop1750)
@@ -460,6 +461,76 @@ coeftest(fe6_1)</code></pre>
 ## yr1850    0.94208    3.84910  0.2448 0.8107820    
 ## yr1875    7.73615    5.27163  1.4675 0.1679539    
 ## yr1900   15.99261    7.58469  2.1085 0.0566788 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># *** Column 2, Panels A-C: overid
+table6_2 = keep %&gt;% 
+  filter(westelbe==1 )
+fe6_2 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_2, weights = table6_2$totalpop1750)
+coeftest(fe6_2)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##          Estimate Std. Error t value  Pr(&gt;|t|)    
+## yearsref  0.28079    0.11417  2.4594 0.0300712 *  
+## yr1750    2.07657    0.96986  2.1411 0.0534852 .  
+## yr1800    4.23235    0.90569  4.6731 0.0005386 ***
+## yr1850    0.94208    3.84910  0.2448 0.8107820    
+## yr1875    7.73615    5.27163  1.4675 0.1679539    
+## yr1900   15.99261    7.58469  2.1085 0.0566788 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># *** Column 3, Panels A-C: unweighted
+table6_3 = keep %&gt;% 
+  filter(westelbe==1 )
+fe6_3 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_3)
+coeftest(fe6_3)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##          Estimate Std. Error t value Pr(&gt;|t|)   
+## yearsref  0.21956    0.12174  1.8036 0.096446 . 
+## yr1750    2.53522    0.93470  2.7123 0.018874 * 
+## yr1800    4.93707    1.53583  3.2146 0.007429 **
+## yr1850    2.72391    3.23640  0.8416 0.416443   
+## yr1875    9.90298    5.18109  1.9114 0.080131 . 
+## yr1900   20.04083    8.03468  2.4943 0.028209 * 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># *** Column 4, Panels A-C: East and West of Elbe
+table6_4 = keep
+fe6_4 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_4, weights = table6_4$totalpop1750)
+coeftest(fe6_4)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##          Estimate Std. Error t value  Pr(&gt;|t|)    
+## yearsref  0.26776    0.11015  2.4308   0.02574 *  
+## yr1750    2.14963    0.80427  2.6728   0.01552 *  
+## yr1800    4.24738    0.83973  5.0581 8.189e-05 ***
+## yr1850    1.50991    3.43665  0.4394   0.66563    
+## yr1875    8.54490    4.82811  1.7698   0.09369 .  
+## yr1900   16.84007    6.95183  2.4224   0.02619 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># *** Column 5, Panels A-C: Unweighted, East and West of Elbe
+table6_5 = keep
+fe6_5 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_5)
+coeftest(fe6_5)</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##          Estimate Std. Error t value  Pr(&gt;|t|)    
+## yearsref  0.19106    0.10516  1.8168 0.0859326 .  
+## yr1750    2.31148    0.73946  3.1259 0.0058388 ** 
+## yr1800    4.94135    1.19770  4.1257 0.0006349 ***
+## yr1850    3.85202    2.87204  1.3412 0.1965312    
+## yr1875   11.47839    4.24318  2.7051 0.0144927 *  
+## yr1900   21.30383    6.33647  3.3621 0.0034708 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 </div>

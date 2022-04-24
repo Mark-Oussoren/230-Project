@@ -41,11 +41,65 @@ keep = french_main %>%
 Note: yearsref is the reforms index.
 
 ```{r}
+# *** Column 1, Panels A-C: Baseline (weighted)
 table6_1 = keep %>% 
   filter(westelbe==1 )
 fe6_1 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
      data = table6_1, weights = table6_1$totalpop1750)
 coeftest(fe6_1)
+```
+
+
+
+
+
+```{r}
+# *** Column 2, Panels A-C: overid
+table6_2 = keep %>% 
+  filter(westelbe==1 )
+fe6_2 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_2, weights = table6_2$totalpop1750)
+coeftest(fe6_2)
+```
+
+
+
+
+
+
+```{r}
+# *** Column 3, Panels A-C: unweighted
+table6_3 = keep %>% 
+  filter(westelbe==1 )
+fe6_3 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_3)
+coeftest(fe6_3)
+```
+
+
+
+
+
+
+```{r}
+# *** Column 4, Panels A-C: East and West of Elbe
+table6_4 = keep
+fe6_4 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_4, weights = table6_4$totalpop1750)
+coeftest(fe6_4)
+```
+
+
+
+
+
+
+```{r}
+# *** Column 5, Panels A-C: Unweighted, East and West of Elbe
+table6_5 = keep
+fe6_5 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
+     data = table6_5)
+coeftest(fe6_5)
 ```
 
 
