@@ -1,6 +1,5 @@
 ---
 title: "table 5"
-author: "Spring 2022"
 date: "4/23/2022"
 output: html_document
 ---
@@ -30,70 +29,84 @@ a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
 
 b <- c("Baden", "Bavaria Old" , "Hessen-Darmstadt, right of the Rhine", 
       "Saxony", "Wuerttemberg")
+
 c <- c( "Brandenburg" , "East Prussia" , 
        "Pomerania without Swedish Pomerania" , "Silesia",  
        "Mecklenburg-Schwerin" , "Schleswig-Holstein" )
 
 keep = french_t5 %>%
-  filter(year <= 1914 )
+  filter(year <= 1914)
 timeperiods = unique(keep$year)
 
+col1 <- c()
 for (X in timeperiods){
   table_5_1 = filter(keep, year == X & imputed==0 & westelbe==1)
-  lm_5_1 = feols(agric ~ fpresence  , cluster = ~ state, data = table_5_1, weights = table_5_1$pop1849)
-  print(lm_5_1$coefficients)
-  print(lm_5_1$se)
+  lm_5_1 = feols(agric ~ fpresence, cluster = ~ state, data = table_5_1, weights = table_5_1$pop1849)
+  estimate <- lm_5_1$coefficients[2]
+  std <- lm_5_1$se[2]
+  col1 <- c(col1, estimate, std)
   }
 
 
-
+col2 <- c()
 for (X in timeperiods){
   table_5_2 = filter(keep, year == X & imputed==0 & westelbe==1)
   lm_5_2 = feols(agric ~ fpresence  , cluster = ~ state, data = table_5_2 )
-  print(lm_5_2$coefficients)
-  print(lm_5_2$se)
+  estimate <- lm_5_2$coefficients[2]
+  std <- lm_5_2$se[2]
+  col2 <- c(col2, estimate, std)
   }
 
-
+col3 <- c()
 for (X in timeperiods){
   table_5_3 = filter(keep, year == X & imputed==0)
   lm_5_3 = feols(agric ~ fpresence  , cluster = ~ state, data = table_5_3, weights = table_5_3$pop1849)
-  df = data.frame( coefficients = lm_5_3$coefficients , robust_std_error = lm_5_3$se)
-  print(df)
+  estimate <- lm_5_3$coefficients[2]
+  std <- lm_5_3$se[2]
+  col3 <- c(col3, estimate, std)
   }
 
 ######### for the INDUSTRY ~ FPRESENCE
-
+col4 <- c()
 for (X in timeperiods){
   table_5_4 = filter(keep, year == X & imputed==0& westelbe==1)
   lm_5_4 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_4 , weights = table_5_4$pop1849)
-  print(lm_5_4$coefficients)
-  print(lm_5_4$se)
+  estimate <- lm_5_4$coefficients[2]
+  std <- lm_5_4$se[2]
+  col4 <- c(col4, estimate, std)
   }
 
 
 ###
 
 
-
+col5 <- c()
 for (X in timeperiods){
   table_5_5 = filter(keep, year == X & imputed==0 & westelbe==1)
   lm_5_5 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_5 )
-  print(lm_5_5$coefficients)
-  print(lm_5_5$se)
+  estimate <- lm_5_5$coefficients[2]
+  std <- lm_5_5$se[2]
+  col5 <- c(col5, estimate, std)
   }
 
 
-
+col6 <- c()
 for (X in timeperiods){
   table_5_6 = filter(keep, year == X & imputed==0)
   lm_5_6 = feols(industry ~ fpresence  , cluster = ~ state, data = table_5_6 , weights = table_5_6$pop1849)
-  print(lm_5_6$coefficients)
-  print(lm_5_6$se)
-  }
+  estimate <- lm_5_6$coefficients[2]
+  std <- lm_5_6$se[2]
+  col6 <- c(estimate, std)
+}
 
+result <- cbind(col1, col2, col3, col4, col5, col6)
+```
 
-
+```{r}
+names <- c("Years French presence, 1849", "(*)", "Years French presence, 1882",
+          "(*)", "Years French presence, 1895", "(*)", 
+          "Years French presence, 1907", "(*)")
+createTable(round(result, 3), names)
 ```
 
 
