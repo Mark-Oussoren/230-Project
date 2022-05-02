@@ -45,7 +45,7 @@ a_b = keep %>% filter( westelbe == 1) %>%
   select(id, urbrate, fpresence1750, fpresence1800,  
          fpresence1850, fpresence1875,  fpresence1900, totalpop1750,
          yr1700, yr1750, yr1800, yr1850,yr1875,
-         yr1900 )
+         yr1900)
 ```
 
 
@@ -101,5 +101,6 @@ col4 <- c(col4, 0, dim(drop_na(keep))[1], length(unique(drop_na(keep)$id)), join
 
 ```{r}
 createTable(round(cbind(col1, col2, col3, col4), 3), col0)
+round(cbind(col1, col2, col3, col4), 3)
 ```
 

@@ -169,5 +169,5 @@ row_names <- c('Urbanization in 1700', '', 'Urbanization in 1750', '',
                'Urbanization in 1875', '', 'Urbanization in 1900', '',
                'Share Protestant', '', 'Latitude', '', 'Longitude', '',
                'Distance to Paris', '')
-table_2 <- createTable(combined_avgs, row_names)
+table_2 <- createTable(round(combined_avgs, 2), row_names)
 ```
