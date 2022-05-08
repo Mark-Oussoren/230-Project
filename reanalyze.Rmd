@@ -43,23 +43,11 @@ new_keep = (keep %>% filter(westelbe==1))
 
 
 ```{r}
-col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1750", "(*)", "Years French × 1800 presence", "(*)", "Years French × 1850 presence", "(*)", "Years French presence × 1900", "(*)", "", "Observations", "Number of states", "p-value for joint significance after 1800")
-each_id = data.frame( value = c('Years French presence x 1750', 
-                                'SD Years French presence x 1750', 
-                                'Years French presence x 1800', 
-                                'SD Years French presence x 1800', 
-                                'Years French presence x 1850', 
-                                'SD Years French presence x 1850', 
-                                'Years French presence x 1875', 
-                                'SD Years French presence x 1875', 
-                                'Years French presence x 1900',  
-                                'SD Years French presence x 1900', 
-                                'Lagged Urbanization', 
-                                'SD Lagged Urbanization', 
-                                'Observations', 
-                                'Number of states', 
-                                'p-value for joint signficance after 1800', 
-                                'p-value for joint significance covariates') )
+col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1800",
+          "(*)", "Years French presence × 1850", "(*)",
+          "Years French presence × 1875", "(*)", "Years French presence × 1900",
+          "(*)", "", "Observations", "Number of states",
+          "p-value for joint significance after 1800")
 
 acemoglu_table <- c()
 sheran_table <- c()
