@@ -43,6 +43,7 @@ new_keep = (keep %>% filter(westelbe==1))
 
 
 ```{r}
+col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1750", "(*)", "Years French × 1800 presence", "(*)", "Years French × 1850 presence", "(*)", "Years French presence × 1900", "(*)", "", "Observations", "Number of states", "p-value for joint significance after 1800")
 each_id = data.frame( value = c('Years French presence x 1750', 
                                 'SD Years French presence x 1750', 
                                 'Years French presence x 1800', 
@@ -59,29 +60,38 @@ each_id = data.frame( value = c('Years French presence x 1750',
                                 'Number of states', 
                                 'p-value for joint signficance after 1800', 
                                 'p-value for joint significance covariates') )
+
+acemoglu_table <- c()
+sheran_table <- c()
 for (i in unique(new_keep$id)){
-  
   table4_1 = new_keep %>%
     filter( id!= i )
   fe4_1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
                fpresence1850 + fpresence1875 + fpresence1900 + 
                yr1700 + yr1750 + yr1800 + yr1850 + yr1875 | id | 0 | id, 
                data = table4_1, weights = table4_1$totalpop1750)
-  
-coef1 <- coeftest(fe4_1)
-data_count <- dim(drop_na(table4_1))[1]
-state_count <- length(unique(table4_1$name))
-pval1 <- linearHypothesis(fe4_1, c("fpresence1850=0", 
-                                   "fpresence1875=0", 
-                                   "fpresence1900=0"),
-                          test = c("F"))$`Pr(>F)`[2]
-pval2 <- 0
-col1 <- c(rbind(coef1[1:5, 1], coef1[1:5, 2]))
-col1 <- c(col1, 0, 0, data_count, state_count, pval1, pval2)
-  each_id = cbind(each_id, col1)
+  coef1 <- coeftest(fe4_1)
+  data_count <- dim(drop_na(table4_1))[1]
+  state_count <- length(unique(table4_1$name))
+  pval1 <- linearHypothesis(fe4_1, c("fpresence1850=0", 
+                                     "fpresence1875=0", 
+                                     "fpresence1900=0"),
+                            test = c("F"))$`Pr(>F)`[2]
+  col <- c(rbind(coef1[1:5, 1], coef1[1:5, 2]))
+  col <- c(col, 0, data_count, state_count, pval1)
+  # if pval <= 0.05, add to Acemoglu, else add to Sharon's table
+  if (pval1 <= 0.05) {
+    acemoglu_table <- cbind(acemoglu_table, col)
+  } else {
+    sheran_table <- cbind(sheran_table, col)
+  }
 }
-colnames(each_id ) = c('', paste('Removed ID', unique(new_keep$id)) )
-each_id
-
 ```
 
+```{r eval=True}
+createTable(round(acemoglu_table, 3), col0)
+```
+
+```{r eval=True}
+createTable(round(sheran_table, 3), col0)
+```
