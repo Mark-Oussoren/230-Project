@@ -21,8 +21,12 @@ library(car)
 library(tidyr)
 library(plm)
 
-french_t5 = read.dta('french_t5.dta')
-french_main = read.dta('french_main.dta')
+# set working directory
+setwd("~/230-Project/")
+
+# reading in the data
+french_t5 = read.dta('dta/french_t5.dta')
+french_main = read.dta('dta/french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")

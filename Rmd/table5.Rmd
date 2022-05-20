@@ -21,8 +21,12 @@ library(plm)
 library(fixest)
 library(sandwich)
 
-french_t5 = read.dta('french_t5.dta')
-french_main = read.dta('french_main.dta')
+# set working directory
+setwd("~/230-Project/")
+
+# reading in the data
+french_t5 = read.dta('dta/french_t5.dta')
+french_main = read.dta('dta/french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
@@ -47,7 +51,6 @@ for (X in timeperiods){
   col1 <- c(col1, estimate, std)
   }
 
-
 col2 <- c()
 for (X in timeperiods){
   table_5_2 = filter(keep, year == X & imputed==0 & westelbe==1)
@@ -67,6 +70,7 @@ for (X in timeperiods){
   }
 
 ######### for the INDUSTRY ~ FPRESENCE
+
 col4 <- c()
 for (X in timeperiods){
   table_5_4 = filter(keep, year == X & imputed==0& westelbe==1)
@@ -74,11 +78,9 @@ for (X in timeperiods){
   estimate <- lm_5_4$coefficients[2]
   std <- lm_5_4$se[2]
   col4 <- c(col4, estimate, std)
-  }
+}
 
-
-###
-
+########
 
 col5 <- c()
 for (X in timeperiods){
@@ -88,7 +90,6 @@ for (X in timeperiods){
   std <- lm_5_5$se[2]
   col5 <- c(col5, estimate, std)
   }
-
 
 col6 <- c()
 for (X in timeperiods){

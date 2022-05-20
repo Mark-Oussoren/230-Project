@@ -19,8 +19,15 @@ library(foreign)
 library(dplyr)
 library(stringr)
 library(kableExtra)
-french_t5 = read.dta('french_t5.dta')
-french_main = read.dta('french_main.dta')
+library(reactable)
+library(stargazer)
+
+# set working directory
+setwd("~/230-Project/")
+
+# reading in the data
+french_t5 = read.dta('dta/french_t5.dta')
+french_main = read.dta('dta/french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
@@ -48,12 +55,9 @@ t1a = only_a %>%
   summarise(fpresence = first(fpresence),
             total_pop = first(totalpop1750 ) ) %>% 
   arrange(desc(fpresence))
-# t1a
-
-# weighted average for panel a
-# sum(((t1a$total_pop) / sum(t1a$total_pop)) * t1a$first)
 
 #######################
+
 cc = only_a %>% summarise( s = first(ccodenoalr ) , 
              e1 =first( ccodenoalroff ) ,
              e2 = first(ccodenoalron )  )
@@ -65,7 +69,6 @@ cc2 = cbind(cc, str_remove(
 colnames(cc2) = c("name" , "s", "e1"  , "e2", 'civil_code' )
 
 cc3 = select(cc2, name, civil_code)
-
 
 #######################
 
@@ -80,8 +83,6 @@ serfdom2 = cbind(serfdom, str_remove(
 colnames(serfdom2) = c("name" , "s", "e1"  , "e2", 'serfdom' )
 
 serfdom3 = select(serfdom2, name, serfdom)
-# serfdom3
-
 
 #######################
 
@@ -96,13 +97,8 @@ reform2 = cbind(reform, str_remove(
 colnames(reform2) = c("name" , "s", "e1"  , "e2", 'reform' )
 
 reform3 = select(reform2, name, reform)
-#reform3
-
-
-
 
 #######################
-
 
 guilds = only_a %>% summarise( s = first(guildsfirst ) , 
              e1 =first( guildsoff ) ,
@@ -115,9 +111,6 @@ guilds2 = cbind(guilds, str_remove(
 colnames(guilds2) = c("name" , "s", "e1"  , "e2", 'guilds' )
 
 guilds3 = select(guilds2, name, guilds)
-#guilds3
-
-
 
 #######################
 
@@ -131,12 +124,10 @@ reforms_1900 = na.omit(french_main) %>%
   filter( year == 1900) %>% select(name, yearsref)
 colnames(reforms_1900 ) = c('name', 'yearsref_1900')
 
-
 ######################
+
 pop_weights_1750 = only_a %>% 
   summarise(pop_weights_1750 = round( first(totalpop1750) , -3) /1000 )
-# pop_weights_1750
-
 
 final_a = left_join( left_join (left_join(
   left_join(left_join(left_join( left_join(t1a, cc3, by = 'name'), 
@@ -160,28 +151,18 @@ return_a = final_a
  return( result )
 }
 
-
-
 t1a = table1_maker(a) 
 t1a = t1a[c(2, 1, 5, 7, 3, 6, 4, 8, 9),]
 
 t1b = table1_maker(b) 
 
-
 t1c = table1_maker(c)
 t1c = t1c[c(1, 2, 4, 6, 3, 5, 7),]
 
-
-# install.packages('reactable')
-library(reactable)
 col_table1 = c('Country','Years of French presence', 'Civil code', 'Abolition of serfdom', 'Agrarian reform', 'Abolition of guilds', 'Reforms index as of 1850', 'Reforms index as of 1900', 'Pop. weights')
 
 col2_table1 = c('Country','Years of<br>French presence', 'Civil code', 'Abolition of<br>serfdom', 'Agrarian reform', 'Abolition<br>of guilds', 'Reforms index<br>as of 1850', 'Reforms index<br>as of 1900', 'Pop. weights')
 colnames(t1a) = col_table1
-
-
-
-library(stargazer)
 
 stargazer(t1a,  
           column.labels = col2_table1,

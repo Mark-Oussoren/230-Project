@@ -26,8 +26,13 @@ library(tidyr)
 library(broom)
 library(lfe)
 library(fixest)
-french_t5 = read.dta('french_t5.dta')
-french_main = read.dta('french_main.dta')
+
+# set working directory
+setwd("~/230-Project/")
+
+# reading in the data
+french_t5 = read.dta('dta/french_t5.dta')
+french_main = read.dta('dta/french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
@@ -50,7 +55,7 @@ a_b = keep %>% filter( westelbe == 1) %>%
 
 
 ```{r}
-col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1750", "(*)", "Years French × 1800 presence", "(*)", "Years French × 1850 presence", "(*)", "Years French presence × 1900", "(*)", "", "Observations", "Number of states", "p-value for joint significance after 1800")
+col0 <- c("Years French presence × 1750", "(*)", "Years French presence × 1800", "(*)", "Years French × 1850 presence", "(*)", "Years French × 1875 presence", "(*)", "Years French presence × 1900", "(*)", "", "Observations", "Number of states", "p-value for joint significance after 1800")
 
 fe1 = felm(formula = urbrate ~ fpresence1750 + fpresence1800 + 
            fpresence1850 + fpresence1875 + fpresence1900 + 

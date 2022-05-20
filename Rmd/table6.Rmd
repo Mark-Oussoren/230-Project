@@ -22,8 +22,12 @@ library(car)
 library(tidyr)
 library(plm)
 
-french_t5 = read.dta('french_t5.dta')
-french_main = read.dta('french_main.dta')
+# set working directory
+setwd("~/230-Project/")
+
+# reading in the data
+french_t5 = read.dta('dta/french_t5.dta')
+french_main = read.dta('dta/french_main.dta')
 
 a <- c("Rhineland", "Bavarian Palatinate", "Mark", "Westphalia without Mark",
        "Brunswick", "Saxony Province", "Hessen-Kassel", "Hanover")
@@ -41,7 +45,6 @@ keep = french_main %>%
 
 ```{r}
 ivreg2 <- function(form,endog,iv,data,digits=3){
-  # library(MASS)
   # model setup
   r1 <- lm(form,data)
   y <- r1$fitted.values+r1$resid
@@ -49,6 +52,7 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   aa <- rbind(endog == colnames(x),1:dim(x)[2])  
   z <- cbind(x[,aa[2,aa[1,]==0]],data[,iv])  
   colnames(z)[(dim(z)[2]-length(iv)+1):(dim(z)[2])] <- iv  
+  
   # iv coefficients and standard errors
   z <- as.matrix(z)
   pz <- z %*% (solve(crossprod(z))) %*% t(z)
@@ -59,6 +63,7 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   res <- matrix(as.numeric(sprintf(paste("%.",paste(digits,"f",sep=""),sep=""),res)),nrow=dim(res)[1])
   rownames(res) <- colnames(x)
   colnames(res) <- c("Coef","S.E.","t-stat","p-val")
+  
   # First-stage F-test
   y1 <- data[,endog]
   z1 <- x[,aa[2,aa[1,]==0]]
@@ -73,6 +78,7 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   firststage <- c(fs)
   firststage <- matrix(as.numeric(sprintf(paste("%.",paste(digits,"f",sep=""),sep=""),firststage)),ncol=length(firststage))
   colnames(firststage) <- c("First Stage F-test")
+  
   # Hausman tests
   bols <- solve(crossprod(x)) %*% crossprod(x,y) 
   sigols <- crossprod((y - x %*% bols),(y - x %*% bols))/(length(y)-length(bols))
@@ -83,6 +89,7 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   pz1 <- z1 %*% (solve(crossprod(z1))) %*% t(z1)
   biv1 <- biv[!(rownames(biv) %in% "(Intercept)"),]
   bols1 <- bols[!(rownames(bols) %in% "(Intercept)"),]
+  
   # Durbin-Wu-Hausman chi-sq test:
   # haus <- t(biv1-bols1) %*% ginv(as.numeric(sigml)*(solve(crossprod(x1,pz1) %*% x1)-solve(crossprod(x1)))) %*% (biv1-bols1)
   # hpvl <- 1-pchisq(haus,df=1)
@@ -104,6 +111,7 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   hawu <- matrix(as.numeric(sprintf(paste("%.",paste(digits,"f",sep=""),sep=""),hawu)),ncol=length(hawu))
   #colnames(hawu) <- c("Durbin-Wu-Hausman chi-sq test","p-val","Wu-Hausman F-test","p-val")
   colnames(hawu) <- c("Wu-Hausman F-test","p-val")  
+  
   # Sargan Over-id test
   ivres <- y - (x %*% biv)
   oid <- solve(crossprod(z)) %*% crossprod(z,ivres)
@@ -121,11 +129,8 @@ ivreg2 <- function(form,endog,iv,data,digits=3){
   }
   full <- list(results=res, weakidtest=firststage, endogeneity=hawu, overid=overid)
   return(full)
+}
 ```
-
-
-
-
 
 Note: `yearsref` is the `reforms` index.
 
@@ -138,10 +143,6 @@ fe6_1 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + 
 coeftest(fe6_1)
 ```
 
-
-
-
-
 ```{r}
 # *** Column 2, Panels A-C: overid
 table6_2 = keep %>% 
@@ -151,11 +152,6 @@ fe6_2 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + 
 coeftest(fe6_2)
 ```
 
-
-
-
-
-
 ```{r}
 # *** Column 3, Panels A-C: unweighted
 table6_3 = keep %>% 
@@ -163,17 +159,7 @@ table6_3 = keep %>%
 fe6_3 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + yr1900 | id | 0 | id, 
      data = table6_3)
 coeftest(fe6_3)
-
-
-
-
-
 ```
-
-
-
-
-
 
 ```{r}
 # *** Column 4, Panels A-C: East and West of Elbe
@@ -183,11 +169,6 @@ fe6_4 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + 
 coeftest(fe6_4)
 ```
 
-
-
-
-
-
 ```{r}
 # *** Column 5, Panels A-C: Unweighted, East and West of Elbe
 table6_5 = keep
@@ -195,6 +176,3 @@ fe6_5 = felm(formula = urbrate ~ yearsref + yr1750 + yr1800 + yr1850 + yr1875 + 
      data = table6_5)
 coeftest(fe6_5)
 ```
-
-
-

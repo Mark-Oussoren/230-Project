@@ -56,8 +56,8 @@ setwd("~/230-Project/")
 source('R/table.R')
 
 # load french data
-french_main <- read.dta("french_main.dta")
-french_t5 <- read.dta("french_t5.dta")
+french_main <- read.dta("dta/french_main.dta")
+french_t5 <- read.dta("dta/french_t5.dta")
 ```
 
 
